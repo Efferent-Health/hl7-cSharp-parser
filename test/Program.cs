@@ -81,6 +81,40 @@ namespace HL7.Dotnetcore.Test
         }
 
         [Fact]
+        public void AddComponents()
+        {
+            //Create a Segment with name ZIB
+            Segment newSeg = new Segment("ZIB", new HL7Encoding());
+
+            // Create Field ZIB_1
+            Field ZIB_1 = new Field("ZIB1", new HL7Encoding());
+            // Create Field ZIB_5
+            Field ZIB_5 = new Field("ZIB5", new HL7Encoding());
+
+            // Create Component ZIB.5.2
+            Component com1 = new Component("ZIB.5.2", new HL7Encoding());
+
+            // Add Component ZIB.5.2 to Field ZIB_5
+            // 2nd parameter here specifies the component position, for inserting segment on particular position
+            // If we don’t provide 2nd parameter, component will be inserted to next position (if field has 2 components this will be 3rd, 
+            // If field is empty this will be 1st component
+            ZIB_5.AddNewComponent(com1, 2);
+
+            // Add Field ZIB_1 to segment ZIB, this will add a new filed to next field location, in this case first field
+            newSeg.AddNewField(ZIB_1);
+
+            // Add Field ZIB_5 to segment ZIB, this will add a new filed as 5th field of segment
+            newSeg.AddNewField(ZIB_5, 5);
+
+            // Add segment ZIB to message
+            var message = new Message(this.HL7_ADT);
+            message.AddNewSegment(newSeg);
+
+            string serializedMessage = message.SerializeMessage(false);
+            Assert.Equal("ZIB|ZIB1||||ZIB5^ZIB.5.2\r", serializedMessage);
+        }
+
+        [Fact]
         public void EmptyFields()
         {
             var message = new Message(this.HL7_ADT);

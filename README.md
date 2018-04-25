@@ -219,7 +219,7 @@ message.AddNewSegment(newSeg);
 New Segment would look like this:
 
 ````text
-ZIB|ZIB1||||^ZIB.5.2
+ZIB|ZIB1||||ZIB5^ZIB.5.2
 ````
 
 After evaluated and modified required values, the message can be obtained again in text format

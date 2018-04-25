@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HL7.Dotnetcore
@@ -97,14 +97,13 @@ namespace HL7.Dotnetcore
         /// <param name="position">Position</param>
         internal void Add(Component component, int position)
         {
-            position = position - 1;
-            int listCount = base.Count;
+            int listCount = base.Count + 1;
 
-            if (position <= listCount)
+            if (position < listCount)
                 base[position] = component;
             else
             {
-                for (int comIndex = listCount + 1; comIndex <= position; comIndex++)
+                for (int comIndex = listCount; comIndex < position; comIndex++)
                 {
                     Component blankCom = new Component(component.Encoding);
                     blankCom.Value = string.Empty;

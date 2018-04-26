@@ -97,7 +97,8 @@ namespace HL7.Dotnetcore
         /// <param name="position">Position</param>
         internal void Add(Component component, int position)
         {
-            int listCount = base.Count + 1;
+            int listCount = base.Count;
+            position = position - 1;
 
             if (position < listCount)
                 base[position] = component;

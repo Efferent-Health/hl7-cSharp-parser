@@ -3,7 +3,7 @@
     <Description>Small HL7 2.x library compatible with .net Core</Description>
     <Copyright>(c) Efferent Health, LLC</Copyright>
     <VersionPrefix>2.5.0</VersionPrefix>
-    <TargetFrameworks>netstandard1.3;netstandard1.5;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;netstandard1.5;netstandard1.6;netstandard2.0;net452</TargetFrameworks>
     <AssemblyName>HL7-dotnetcore</AssemblyName>
     <PackageId>HL7-dotnetcore</PackageId>
     <PackageTags>hl7;dotnetcore</PackageTags>
@@ -21,10 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Runtime" Version="*" />
-    <PackageReference Include="System.Runtime.Extensions" Version="*" />
-    <PackageReference Include="System.Linq" Version="*" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="*" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
   </ItemGroup>
 </Project>
 

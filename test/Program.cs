@@ -128,25 +128,21 @@ namespace HL7.Dotnetcore.Test
         }
 
         [Fact]
-        public void EncodingForOutput()
+        public void AddField()
         {
-            const string oruUrl = "domain.com/resource.html?Action=1&ID=2";  // Text with special character (&)
-            
-            var obx = new Segment("OBX", new HL7Encoding());
-            obx.AddNewField("1");
-            obx.AddNewField("RP");
-            obx.AddNewField("70030^Radiologic Exam, Eye, Detection, FB^CDIRadCodes");
-            obx.AddNewField("1");
-            obx.AddNewField(obx.Encoding.Encode(oruUrl));  // Encoded field
-            obx.AddNewField("F", 11);
-            obx.AddNewField(MessageHelper.LongDateWithFractionOfSecond(DateTime.Now), 14);            
+            var enc = new HL7Encoding();
+            Segment pidSeg = new Segment("PID", enc);
+            // Creates a new Field
+            pidSeg.AddNewField("1", 1);
 
-            var oru = new Message();
-            oru.AddNewSegment(obx);
+            // Overwrites the old Field
+            pidSeg.AddNewField("2", 1);
 
-            var str = oru.SerializeMessage(false);
+            Message message = new Message();
+            message.AddNewSegment(pidSeg);
+            var str = message.SerializeMessage(false);
 
-            Assert.DoesNotContain("&", str);  // Should have \T\ instead
+            Assert.Equal("PID|2\r", str);
         }
     }
 }

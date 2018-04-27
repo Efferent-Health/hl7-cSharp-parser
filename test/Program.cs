@@ -128,6 +128,28 @@ namespace HL7.Dotnetcore.Test
         }
 
         [Fact]
+        public void EncodingForOutput()
+        {
+            const string oruUrl = "domain.com/resource.html?Action=1&ID=2";  // Text with special character (&)
+            
+            var obx = new Segment("OBX", new HL7Encoding());
+            obx.AddNewField("1");
+            obx.AddNewField("RP");
+            obx.AddNewField("70030^Radiologic Exam, Eye, Detection, FB^CDIRadCodes");
+            obx.AddNewField("1");
+            obx.AddNewField(obx.Encoding.Encode(oruUrl));  // Encoded field
+            obx.AddNewField("F", 11);
+            obx.AddNewField(MessageHelper.LongDateWithFractionOfSecond(DateTime.Now), 14);            
+
+            var oru = new Message();
+            oru.AddNewSegment(obx);
+
+            var str = oru.SerializeMessage(false);
+
+            Assert.DoesNotContain("&", str);  // Should have \T\ instead
+        }
+
+        [Fact]
         public void AddField()
         {
             var enc = new HL7Encoding();

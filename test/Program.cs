@@ -148,5 +148,23 @@ namespace HL7.Dotnetcore.Test
 
             Assert.DoesNotContain("&", str);  // Should have \T\ instead
         }
+        
+        [Fact]
+        public void AddField()
+        {
+            var enc = new HL7Encoding();
+            Segment mshSeg = new Segment("PID", enc);
+            // Creates a new Field
+            mshSeg.AddNewField("1", 1);
+
+            // Overwrites the old Field
+            mshSeg.AddNewField("2", 1);
+
+            Message message = new Message();
+            message.AddNewSegment(mshSeg);
+            var str = message.SerializeMessage(false);
+
+            Assert.Equal("PID|2\r", str);
+        }
     }
 }

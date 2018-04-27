@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -191,11 +191,11 @@ namespace HL7.Dotnetcore
         {
             int listCount = base.Count;
 
-            if (position <= listCount)
+            if (position < listCount)
                 base[position] = field;
             else
             {
-                for (int fieldIndex = listCount+1; fieldIndex <= position; fieldIndex++)
+                for (int fieldIndex = listCount; fieldIndex < position; fieldIndex++)
                 {
                     Field blankField = new Field(string.Empty, field.Encoding);
                     base.Add(blankField);

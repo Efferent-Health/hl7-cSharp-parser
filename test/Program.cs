@@ -93,14 +93,14 @@ namespace HL7.Dotnetcore.Test
             // Create Field ZIB_5
             Field ZIB_5 = new Field("ZIB5", encoding);
 
-            // Create Component ZIB.5.2
-            Component com1 = new Component("ZIB.5.2", encoding);
+            // Create Component ZIB.5.3
+            Component com1 = new Component("ZIB.5.3_", encoding);
 
-            // Add Component ZIB.5.2 to Field ZIB_5
-            // 2nd parameter here specifies the component position, for inserting segment on particular position
-            // If we don’t provide 2nd parameter, component will be inserted to next position (if field has 2 components this will be 3rd, 
-            // If field is empty this will be 1st component
-            ZIB_5.AddNewComponent(com1, 2);
+            // Add Component ZIB.5.3 to Field ZIB_5
+            ZIB_5.AddNewComponent(com1, 3);
+
+            // Overwrite the same field again
+            ZIB_5.AddNewComponent(new Component("ZIB.5.3", encoding), 3);
 
             // Add Field ZIB_1 to segment ZIB, this will add a new filed to next field location, in this case first field
             newSeg.AddNewField(ZIB_1);
@@ -113,7 +113,7 @@ namespace HL7.Dotnetcore.Test
             message.AddNewSegment(newSeg);
 
             string serializedMessage = message.SerializeMessage(false);
-            Assert.Equal("ZIB|ZIB1||||ZIB5^ZIB.5.2\r", serializedMessage);
+            Assert.Equal("ZIB|ZIB1||||ZIB5^^ZIB.5.3\r", serializedMessage);
         }
 
         [Fact]
@@ -147,6 +147,24 @@ namespace HL7.Dotnetcore.Test
             var str = oru.SerializeMessage(false);
 
             Assert.DoesNotContain("&", str);  // Should have \T\ instead
+        }
+
+        [Fact]
+        public void AddField()
+        {
+            var enc = new HL7Encoding();
+            Segment pidSeg = new Segment("PID", enc);
+            // Creates a new Field
+            pidSeg.AddNewField("1", 1);
+
+            // Overwrites the old Field
+            pidSeg.AddNewField("2", 1);
+
+            Message message = new Message();
+            message.AddNewSegment(pidSeg);
+            var str = message.SerializeMessage(false);
+
+            Assert.Equal("PID|2\r", str);
         }
     }
 }

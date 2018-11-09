@@ -37,7 +37,7 @@ namespace HL7.Dotnetcore
         public static string[] ExtractMessages(string messages)
         {
             var expr = "\x0B(.*?)\x1C\x0D";
-            var matches = Regex.Matches(messages, expr);
+            var matches = Regex.Matches(messages, expr, RegexOptions.Singleline);
             
             var list = new List<string>();
             foreach (Match m in matches)

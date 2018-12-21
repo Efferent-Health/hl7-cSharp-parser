@@ -26,6 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\hl7-dotnetcore.csproj" />
+    <ProjectReference Include="..\src\HL7-dotnetcore.csproj" />
   </ItemGroup>
 </Project>

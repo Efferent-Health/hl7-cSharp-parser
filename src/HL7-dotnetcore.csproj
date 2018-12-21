@@ -21,9 +21,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Runtime" Version="*" />
-    <PackageReference Include="System.Runtime.Extensions" Version="*" />
-    <PackageReference Include="System.Linq" Version="*" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="*" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
   </ItemGroup>
 </Project>

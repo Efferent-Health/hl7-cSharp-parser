@@ -269,16 +269,27 @@ namespace HL7.Dotnetcore.Test
         [TestMethod]
         public void EmptyAndNullFieldsTest()
         {
-            const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nEVN|A04|20110613083617||\"\"";
+            const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nEVN|A04|20110613083617||\"\"\r\n";
 
             var message = new Message(sampleMessage);
-            message.ParseMessage();
+            var isParsed = message.ParseMessage();
+            Assert.IsTrue(isParsed);
+            Assert.IsTrue(message.SegmentCount > 0);
             var evn = message.Segments("EVN")[0];
-
             var expectEmpty = evn.Fields(3).Value;
             Assert.AreEqual(string.Empty, expectEmpty);
             var expectNull = evn.Fields(4).Value;
             Assert.AreEqual(null, expectNull);
+        }
+
+
+        [TestMethod]
+        public void ParseIsReversable() {
+            const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nEVN|A04|20110613083617||\"\"\r\n";
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+            var serialized = message.SerializeMessage(false);
+            Assert.AreEqual(sampleMessage, serialized);
         }
     }
 }

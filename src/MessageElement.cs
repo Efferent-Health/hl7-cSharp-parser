@@ -3,13 +3,13 @@ namespace HL7.Dotnetcore
     public abstract class MessageElement
     {
         protected string _value = string.Empty;
-        const string presentButNull = "\"\"";
+       
         
         public  string Value 
         { 
             get 
             {
-                return _value == presentButNull ? null : _value; 
+                return _value == Encoding.PresentButNull ? null : _value; 
             }
             set 
             { 

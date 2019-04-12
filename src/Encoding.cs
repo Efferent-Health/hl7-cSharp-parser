@@ -13,7 +13,7 @@ namespace HL7.Dotnetcore
         public char EscapeCharacter { get; set; } = '\\'; // \E\
         public char SubComponentDelimiter { get; set; } = '&'; // \T\
         public string SegmentDelimiter { get; set; } = "\r";
-         public string PresentButNull {get;set;}= "\"\"";
+        public string PresentButNull {get;set;}= "\"\"";
 
         public HL7Encoding()
         {

@@ -284,7 +284,7 @@ namespace HL7.Dotnetcore.Test
 
 
         [TestMethod]
-        public void ParseIsReversable() {
+        public void QuoteChangeIsReversable() {
             const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nEVN|A04|20110613083617||\"\"\r\n";
             var message = new Message(sampleMessage);
             message.ParseMessage();

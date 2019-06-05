@@ -5,3 +5,4 @@ project.lock.json
 .DS_Store
 /packages
 /node_modules
+/.vs/HL7-dotnetcore/v16/Server/sqlite3

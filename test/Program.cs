@@ -303,5 +303,51 @@ namespace HL7.Dotnetcore.Test
             message.RemoveSegment("NK1");
             Assert.AreEqual(message.Segments("NK1").Count, 0);
         }
+
+        [TestMethod]
+        public void ParseDateTime()
+        {
+            var dateTest4 = "2019";
+            var expectedResultDateTest4 = new DateTime(2019, 1, 1);
+
+            var dateTest6 = "201904";
+            var expectedResultDateTest6 = new DateTime(2019, 4, 1);
+
+            var dateTest8 = "20190401";
+            var expectedResultDateTest8 = new DateTime(2019, 4, 1);
+
+            var dateTest10 = "2019040113";
+            var expectedResultDateTest10 = new DateTime(2019, 4, 1, 13, 0, 0);
+
+            var dateTest12 = "201904011341";
+            var expectedResultDateTest12 = new DateTime(2019, 4, 1, 13, 41, 0);
+
+            var dateTest14 = "20190401134151";
+            var expectedResultDateTest14 = new DateTime(2019, 4, 1, 13, 41, 51);
+
+            var dateTest16 = "2019040113415145";
+            var expectedResultDateTest16 = new DateTime(2019, 4, 1, 13, 41, 51, 450);
+
+            var dateTest19 = "2019040113415145123";
+            var expectedResultDateTest19 = new DateTime(2019, 4, 1, 13, 41, 51, 450).AddTicks(TimeSpan.TicksPerMillisecond / 100 * 123);
+
+            var result4 = MessageHelper.ParseDateTime(dateTest4);
+            var result6 = MessageHelper.ParseDateTime(dateTest6);
+            var result8 = MessageHelper.ParseDateTime(dateTest8);
+            var result10 = MessageHelper.ParseDateTime(dateTest10);
+            var result12 = MessageHelper.ParseDateTime(dateTest12);
+            var result14 = MessageHelper.ParseDateTime(dateTest14);
+            var result16 = MessageHelper.ParseDateTime(dateTest16);
+            var result19 = MessageHelper.ParseDateTime(dateTest19);
+
+            Assert.AreEqual(result4, expectedResultDateTest4);
+            Assert.AreEqual(result6, expectedResultDateTest6);
+            Assert.AreEqual(result8, expectedResultDateTest8);
+            Assert.AreEqual(result10, expectedResultDateTest10);
+            Assert.AreEqual(result12, expectedResultDateTest12);
+            Assert.AreEqual(result14, expectedResultDateTest14);
+            Assert.AreEqual(result16, expectedResultDateTest16);
+            Assert.AreEqual(result19, expectedResultDateTest19);
+        }
     }
 }

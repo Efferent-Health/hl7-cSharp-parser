@@ -45,5 +45,40 @@ namespace HL7.Dotnetcore
 
             return list.ToArray();
         }
+
+        /// <summary>
+        /// Helper method to parse date (and time) values - ATTENTION: time zones are not supported yet
+        /// </summary>
+        public static DateTime ParseDateTime(string dateTimeValueAsString)
+        {
+            // set up the supported parsing patterns
+            var parsingPatterns = new Dictionary<int, string> {
+                {4, "yyyy" },
+                {6, "yyyyMM" },
+                {8, "yyyyMMdd" },
+                {10, "yyyyMMddHH" },
+                {12, "yyyyMMddHHmm" },
+                {14, "yyyyMMddHHmmss" },
+                {16, "yyyyMMddHHmmssff" },
+                {19, "yyyyMMddHHmmssfffff" }
+            };
+
+            // take care of whitespaces around the value
+            dateTimeValueAsString = dateTimeValueAsString.Trim();
+
+            if (!parsingPatterns.ContainsKey(dateTimeValueAsString.Length))
+            {
+                throw new HL7Exception($"Unsupported input pattern");
+            }
+
+            if (DateTime.TryParseExact(dateTimeValueAsString, parsingPatterns[dateTimeValueAsString.Length], CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
+            {
+                return dateTime;
+            }
+            else
+            {
+                throw new HL7Exception($"Unable to parse date time value: '{dateTimeValueAsString}'");
+            }
+        }
     }
 }

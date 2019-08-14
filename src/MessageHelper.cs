@@ -50,21 +50,27 @@ namespace HL7.Dotnetcore
 
         public static DateTime? ParseDateTime(string dateTimeString)
         {
-            try {
+            try 
+            {
                 var result = ParseDateTimeOffset(dateTimeString, assumeLocalTime: false);
                 return result.DateTime;
-            } catch {
+            } 
+            catch 
+            {
                 return null;
             }
         }
 
         public static DateTime? ParseDateTime(string dateTimeString, out TimeSpan offset)
         {
-            try {
+            try 
+            {
                 var result = ParseDateTimeOffset(dateTimeString, assumeLocalTime: false);
                 offset = result.Offset;
                 return result.DateTime;
-            } catch {
+            } 
+            catch 
+            {
                 offset = default;
                 return null;
             }
@@ -78,20 +84,24 @@ namespace HL7.Dotnetcore
         /// <exception cref="ArgumentNullException">If <paramref name="value"/> is null</exception>
         /// <exception cref="FormatException">If <paramref name="value"/> is not a valid HL7 timestamp (DTM).</exception>
         /// <returns>The timestamp as <see cref="DateTimeOffset"/></returns>
-        public static DateTimeOffset ParseDateTimeOffset(string value, bool assumeLocalTime = false) {
-            if (value == null) {
+        public static DateTimeOffset ParseDateTimeOffset(string value, bool assumeLocalTime = false) 
+        {
+            if (value == null) 
+            {
                 throw new ArgumentNullException(nameof(value));
             }
 
             var timestamp = value.Trim();
-            if (timestamp == string.Empty) {
+            if (timestamp == string.Empty) 
+            {
                 throw new FormatException(CreateExceptionMessage(value));
             }
 
             var styles = GetDateTimeStyles(assumeLocalTime);
             
             DateTimeOffset tmp;
-            switch (timestamp.Length) {
+            switch (timestamp.Length) 
+            {
                 case 4: // e.g. 2012
                     return DateTimeOffset.ParseExact(timestamp, "yyyy", InvariantCulture, styles);
                 case 6: // e.g. 201202 (February 2012)

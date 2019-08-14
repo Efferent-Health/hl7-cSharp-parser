@@ -8,7 +8,8 @@ namespace HL7test.MessageHelperSpecs
     [TestClass]
     public class If_the_user_parses_a_HL7_DTM_string_to_DateTimeOffset_assuming_UTC
     {
-        private static IEnumerable<object[]> TestCases() {
+        private static IEnumerable<object[]> TestCases() 
+        {
             // yyyyMMddHHmmssSSSSzzzz
             var milliseconds123dot4 = TimeSpan.FromTicks(1234 * TimeSpan.TicksPerMillisecond / 10);
             yield return new object[] {
@@ -103,7 +104,8 @@ namespace HL7test.MessageHelperSpecs
 
         [DataTestMethod]
         [DynamicData(nameof(TestCases), DynamicDataSourceType.Method)]
-        public void It_should_return_the_correct_DateTimeOffset(string testString, DateTimeOffset expected) {
+        public void It_should_return_the_correct_DateTimeOffset(string testString, DateTimeOffset expected) 
+        {
             var actual = MessageHelper.ParseDateTimeOffset(testString, false);
             Assert.AreEqual(expected, actual);
         }
@@ -112,7 +114,8 @@ namespace HL7test.MessageHelperSpecs
     [TestClass]
     public class If_the_user_parses_a_HL7_DTM_string_to_DateTimeOffset_assuming_LOCAL_TIME
     {
-        private static IEnumerable<object[]> TestCases() {
+        private static IEnumerable<object[]> TestCases() 
+        {
             // yyyyMMddHHmmssSSSSzzzz (timezone data available -> assumeLocalTime ignored)
             var milliseconds123dot4 = TimeSpan.FromTicks(1234 * TimeSpan.TicksPerMillisecond / 10);
             yield return new object[] {
@@ -147,7 +150,8 @@ namespace HL7test.MessageHelperSpecs
 
         [DataTestMethod]
         [DynamicData(nameof(TestCases), DynamicDataSourceType.Method)]
-        public void It_should_return_the_correct_DateTimeOffset(string testString, DateTimeOffset expected) {
+        public void It_should_return_the_correct_DateTimeOffset(string testString, DateTimeOffset expected) 
+        {
             var actual = MessageHelper.ParseDateTimeOffset(testString, true);
             Assert.AreEqual(expected, actual);
         }

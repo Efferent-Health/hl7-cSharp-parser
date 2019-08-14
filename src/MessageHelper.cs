@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,7 @@ namespace HL7.Dotnetcore
 {
     public static class MessageHelper
     {
+        private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
         private static string[] lineSeparators = { "\r\n", "\n\r", "\r", "\n" };
 
         public static List<string> SplitString(string strStringToSplit, string splitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
@@ -48,41 +50,101 @@ namespace HL7.Dotnetcore
 
         public static DateTime? ParseDateTime(string dateTimeString)
         {
-            TimeSpan offset;
-            return ParseDateTime(dateTimeString, out offset);
+            try {
+                var result = ParseDateTimeOffset(dateTimeString, assumeLocalTime: false);
+                return result.DateTime;
+            } catch {
+                return null;
+            }
         }
 
         public static DateTime? ParseDateTime(string dateTimeString, out TimeSpan offset)
         {
-            var expr = @"^\s*((?:19|20)[0-9]{2})(?:(1[0-2]|0[1-9])(?:(3[0-1]|[1-2][0-9]|0[1-9])(?:([0-1][0-9]|2[0-3])(?:([0-5][0-9])(?:([0-5][0-9](?:\.[0-9]{1,4})?)?)?)?)?)?)?(?:([+-][0-1][0-9]|[+-]2[0-3])([0-5][0-9]))?\s*$";
-            var matches = Regex.Matches(dateTimeString, expr, RegexOptions.Singleline);
-
-            try
-            {
-                if (matches.Count != 1)
-                    return null;
-                
-                var groups = matches[0].Groups;
-                int year = int.Parse(groups[1].Value);
-                int month = groups[2].Success ? int.Parse(groups[2].Value) : 1;
-                int day = groups[3].Success ? int.Parse(groups[3].Value) : 1;
-                int hours = groups[4].Success ? int.Parse(groups[4].Value) : 0;
-                int mins = groups[5].Success ? int.Parse(groups[5].Value) : 0;
-
-                float fsecs = groups[6].Success ? float.Parse(groups[6].Value) : 0;
-                int secs = (int)Math.Truncate(fsecs);
-                int msecs = (int)Math.Truncate(fsecs * 1000) % 1000;
-
-                int tzh = groups[7].Success ? int.Parse(groups[7].Value) : 0;
-                int tzm = groups[8].Success ? int.Parse(groups[8].Value) : 0;
-                offset = new TimeSpan(tzh, tzm, 0);
-                
-                return new DateTime(year, month, day, hours, mins, secs, msecs);
-            }
-            catch
-            {
+            try {
+                var result = ParseDateTimeOffset(dateTimeString, assumeLocalTime: false);
+                offset = result.Offset;
+                return result.DateTime;
+            } catch {
+                offset = default;
                 return null;
             }
         }
+        
+        /// <summary>
+        /// Parses a HL7 Timestamp in format YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]
+        /// </summary>
+        /// <param name="value">Timestamp value</param>
+        /// <param name="assumeLocalTime"><c>true</c>: assume local time if <paramref name="value"/> does not contain timezone information. If <c>false</c> assume UTC.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="value"/> is null</exception>
+        /// <exception cref="FormatException">If <paramref name="value"/> is not a valid HL7 timestamp (DTM).</exception>
+        /// <returns>The timestamp as <see cref="DateTimeOffset"/></returns>
+        public static DateTimeOffset ParseDateTimeOffset(string value, bool assumeLocalTime = false) {
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var timestamp = value.Trim();
+            if (timestamp == string.Empty) {
+                throw new FormatException(CreateExceptionMessage(value));
+            }
+
+            var styles = GetDateTimeStyles(assumeLocalTime);
+            
+            DateTimeOffset tmp;
+            switch (timestamp.Length) {
+                case 4: // e.g. 2012
+                    return DateTimeOffset.ParseExact(timestamp, "yyyy", InvariantCulture, styles);
+                case 6: // e.g. 201202 (February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMM", InvariantCulture, styles);
+                case 8: // e.g. 20120207 (7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMdd", InvariantCulture, styles);
+                case 9: // e.g. 2012+0200 (2012, CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyzzz", InvariantCulture, styles);
+                case 10: // e.g. 2012020713 (13:00, 7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHH", InvariantCulture, styles);
+                case 11: // e.g. 201202+0200 (February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMzzz", InvariantCulture, styles);
+                case 12: // e.g. 201202071332 (13:32, 7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmm", InvariantCulture, styles);
+                case 13: // e.g. 20120207+0200 (7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddzzz", InvariantCulture, styles);
+                case 14: // e.g. 20120207133245 (13:32:45, 7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss", InvariantCulture, styles);
+                case 15: // e.g. 2012020713+0200 (13:00, 7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHzzz", InvariantCulture, styles);
+                case 16: // e.g. 20120207133245.1 (13:32:45.1, 7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.f", InvariantCulture, styles);
+                case 17: /* e.g. 20120207133245.12 (13:32:45.12, 7. February 2012)
+                            or   201202071332+0200 (13:32, 7. February 2012 CEST) */
+                    return DateTimeOffset.TryParseExact(timestamp, "yyyyMMddHHmmss.ff", InvariantCulture, styles,
+                        out tmp)
+                        ? tmp
+                        : DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmzzz", InvariantCulture, styles);
+                case 18: // e.g. 20120207133245.123 (13:32:45.123, 7. February 2012)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.fff", InvariantCulture, styles);
+                case 19: /* e.g. 20120207133245.1234 (13:32:45.1234, 7. February 2012)
+                            or   20120207133245+0200 (13:32:45, 7. February 2012 CEST) */
+                    return DateTimeOffset.TryParseExact(timestamp, "yyyyMMddHHmmss.ffff", InvariantCulture, styles,
+                        out tmp)
+                        ? tmp
+                        : DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmsszzz", InvariantCulture, styles);
+                case 21: // e.g. 20120207133245.1+0200 (13:32:45.1, 7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.fzzz", InvariantCulture, styles);
+                case 22: // e.g. 20120207133245.12+0200 (13:32:45.12, 7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.ffzzz", InvariantCulture, styles);
+                case 23: // e.g. 20120207133245.123+0200 (13:32:45.123, 7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.fffzzz", InvariantCulture, styles);
+                default: // e.g. 20120207133245.1234+0200 (13:32:45.123, 7. February 2012 CEST)
+                    return DateTimeOffset.ParseExact(timestamp, "yyyyMMddHHmmss.ffffzzz", InvariantCulture, styles);
+            }
+        }
+
+        private static DateTimeStyles GetDateTimeStyles(bool assumeLocalTime)
+            => assumeLocalTime
+                ? DateTimeStyles.AssumeLocal
+                : DateTimeStyles.AssumeUniversal;
+        
+        private static string CreateExceptionMessage(string value)
+            => $"'{value}' is not a valid HL7 Date/Time (DTM). It must have the following format: YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]";
     }
 }

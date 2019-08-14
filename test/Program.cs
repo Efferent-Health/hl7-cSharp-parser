@@ -305,9 +305,9 @@ namespace HL7.Dotnetcore.Test
         }
 
         [DataTestMethod]
-        [DataRow("   20151231234500.1234+2358   ")]
-        [DataRow("20151231234500.1234+2358")]
-        [DataRow("20151231234500.1234-2358")]
+        [DataRow("   20151231234500.1234+1358   ")]
+        [DataRow("20151231234500.1234+1358")]
+        [DataRow("20151231234500.1234-1358")]
         [DataRow("20151231234500.1234")]
         [DataRow("20151231234500.12")]
         [DataRow("20151231234500")]
@@ -324,6 +324,8 @@ namespace HL7.Dotnetcore.Test
 
         [DataTestMethod]
         [DataRow("   20151231234500.1234+23581")]
+        [DataRow("20151231234500.1234+2359")]
+        [DataRow("20151231234500.1234-2359")]
         [DataRow("20151231234500.1234+23")]
         [DataRow("20151231234500.12345")]
         [DataRow("20151231234500.")]
@@ -343,10 +345,10 @@ namespace HL7.Dotnetcore.Test
         public void ParseDateTime_Correctness()
         {
             TimeSpan offset;
-            var date = MessageHelper.ParseDateTime("20151231234500.1234-2358", out offset).Value;
-            //Assert.AreEqual(0, d
-            Assert.AreEqual(date, new DateTime(2015,12,31,23,45,00,123));
-            Assert.AreEqual(offset, new TimeSpan(-23,58,0));
+            var date = MessageHelper.ParseDateTime("20151231234500.1234-1359", out offset).Value;
+            var milliseconds = 1234 * TimeSpan.TicksPerMillisecond / 10;
+            Assert.AreEqual(new DateTime(2015,12,31,23,45,00).AddTicks(milliseconds), date);
+            Assert.AreEqual(-new TimeSpan(13, 59, 0), offset);
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using HL7.Dotnetcore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HL7test.MessageHelperTests
+namespace HL7test.MessageHelperSpecs
 {
     [TestClass]
     public class If_the_user_parses_a_HL7_DTM_string_to_DateTimeOffset_assuming_UTC

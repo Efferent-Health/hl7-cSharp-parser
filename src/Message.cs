@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace HL7.Dotnetcore
@@ -135,38 +136,31 @@ namespace HL7.Dotnetcore
             if (validate && !this.validateMessage())
                 throw new HL7Exception("Failed to validate the updated message", HL7Exception.BAD_MESSAGE);
 
-            string strMessage = string.Empty;
-            string currentSegName = string.Empty;;
+            var strMessage = new StringBuilder();
+            string currentSegName = string.Empty;
             List<Segment> _segListOrdered = getAllSegmentsInOrder();
 
             try
             {
                 try
                 {
-                    // var first = true;
-
                     foreach (Segment seg in _segListOrdered)
                     {
-                        // if (!first)
-                        //     strMessage += this.Encoding.SegmentDelimiter;
-                        // else
-                        //    first = false;
-
                         currentSegName = seg.Name;
-                        strMessage += seg.Name + this.Encoding.FieldDelimiter;
+                        strMessage.Append(seg.Name).Append(Encoding.FieldDelimiter);
 
                         int startField = currentSegName == "MSH" ? 1 : 0;
 
                         for (int i = startField; i<seg.FieldList.Count; i++)
                         {
                             if (i > startField)
-                                strMessage += this.Encoding.FieldDelimiter;
+                                strMessage.Append(Encoding.FieldDelimiter);
 
                             var field = seg.FieldList[i];
 
                             if (field.IsDelimiters)
                             {
-                                strMessage += field.Value;
+                                strMessage.Append(field.Value);
                                 continue;
                             }
 
@@ -175,16 +169,16 @@ namespace HL7.Dotnetcore
                                 for (int j = 0; j < field.RepeatitionList.Count; j++)
                                 {
                                     if (j > 0)
-                                        strMessage += this.Encoding.RepeatDelimiter;
+                                        strMessage.Append(Encoding.RepeatDelimiter);
 
-                                    strMessage += serializeField(field.RepeatitionList[j]);
+                                    serializeField(field.RepeatitionList[j], strMessage);
                                 }
                             }
                             else
-                                strMessage += serializeField(field);
+                                serializeField(field, strMessage);
                         }
                         
-                        strMessage += this.Encoding.SegmentDelimiter;
+                        strMessage.Append(Encoding.SegmentDelimiter);
                     }
                 }
                 catch (Exception ex)
@@ -195,7 +189,7 @@ namespace HL7.Dotnetcore
                         throw;
                 }
 
-                return strMessage;
+                return strMessage.ToString();
             }
             catch (Exception ex)
             {
@@ -638,7 +632,7 @@ namespace HL7.Dotnetcore
         /// <returns>An ACK or NACK message if success, otherwise null</returns>
         private Message createAckMessage(string code, bool isNack, string errMsg)
         {
-            string response;
+            var response = new StringBuilder();
 
             if (this.MessageStructure != "ACK")
             {
@@ -646,12 +640,12 @@ namespace HL7.Dotnetcore
                 var msh = this.SegmentList["MSH"].First();
                 var delim = this.Encoding.FieldDelimiter;
                 
-                response = "MSH" + this.Encoding.AllDelimiters + delim + msh.FieldList[4].Value + delim + msh.FieldList[5].Value + delim 
-                    + msh.FieldList[2].Value + delim + msh.FieldList[3].Value + delim
-                    + dateString + delim + delim + "ACK" + delim + this.MessageControlID + delim 
-                    + this.ProcessingID + delim + this.Version + this.Encoding.SegmentDelimiter;
+                response.Append("MSH").Append(this.Encoding.AllDelimiters).Append(delim).Append(msh.FieldList[4].Value).Append(delim).Append(msh.FieldList[5].Value).Append(delim)
+                    .Append(msh.FieldList[2].Value).Append(delim).Append(msh.FieldList[3].Value).Append(delim)
+                    .Append(dateString).Append(delim).Append(delim).Append("ACK").Append(delim).Append(this.MessageControlID).Append(delim)
+                    .Append(this.ProcessingID).Append(delim).Append(this.Version).Append(this.Encoding.SegmentDelimiter);
                 
-                response += "MSA" + delim + code + delim + this.MessageControlID + (isNack ? delim + errMsg : string.Empty) + this.Encoding.SegmentDelimiter;
+                response.Append("MSA").Append(delim).Append(code).Append(delim).Append(this.MessageControlID).Append((isNack ? delim + errMsg : string.Empty)).Append(this.Encoding.SegmentDelimiter);
             }
             else
             {
@@ -660,7 +654,7 @@ namespace HL7.Dotnetcore
 
             try 
             {
-                var message = new Message(response);
+                var message = new Message(response.ToString());
                 message.ParseMessage();
                 return message;
             }
@@ -818,10 +812,8 @@ namespace HL7.Dotnetcore
         /// Serializes a field into a string with proper encoding
         /// </summary>
         /// <returns>A serialized string</returns>
-        private string serializeField(Field field)
+        private void serializeField(Field field, StringBuilder strMessage)
         {
-            var strMessage = string.Empty;
-
             if (field.ComponentList.Count > 0)
             {
                 int indexCom = 0;
@@ -830,18 +822,17 @@ namespace HL7.Dotnetcore
                 {
                     indexCom++;
                     if (com.SubComponentList.Count > 0)
-                        strMessage += string.Join(this.Encoding.SubComponentDelimiter.ToString(), com.SubComponentList.Select(sc => this.Encoding.Encode(sc.Value)));
+                        strMessage.Append(string.Join(Encoding.SubComponentDelimiter.ToString(), com.SubComponentList.Select(sc => Encoding.Encode(sc.Value))));
                     else
-                        strMessage += this.Encoding.Encode(com.Value);
+                        strMessage.Append(Encoding.Encode(com.Value));
 
                     if (indexCom < field.ComponentList.Count)
-                        strMessage += this.Encoding.ComponentDelimiter;
+                        strMessage.Append(Encoding.ComponentDelimiter);
                 }
             }
             else
-                strMessage = this.Encoding.Encode(field.Value);
+                strMessage.Append(Encoding.Encode(field.Value));
 
-            return strMessage;
         }
 
         /// <summary> 

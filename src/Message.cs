@@ -630,6 +630,18 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
+        /// Serialize to MLLP escaped byte array
+        /// </summary>
+        /// <param name="validate">Optional. Validate the message before serializing</param>
+        /// <returns>MLLP escaped byte array</returns>
+        public byte[] GetMLLP(bool validate = false)
+        {
+            string hl7 = this.SerializeMessage(validate);
+
+            return MessageHelper.GetMLLP(hl7);
+        }
+        
+        /// <summary>
         /// Builds an ACK or NACK message for this message
         /// </summary>
         /// <param name="code">ack code like AA, AR, AE</param>

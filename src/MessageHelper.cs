@@ -89,49 +89,20 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
-        /// Serialize HL7 message to MLLP escaped byte array
-        /// </summary>
-        /// <param name="message">HL7 message</param>
-        /// <returns>MLLP escaped byte array</returns>
-        public static byte[] MLLP(Message message)
-        {
-            return MLLP(message, false);
-        }
-
-        /// <summary>
-        /// Serialize HL7 message to MLLP escaped byte array
-        /// </summary>
-        /// <param name="message">HL7 message</param>
-        /// <param name="validate">Validate the message before serializing</param>
-        /// <returns>MLLP escaped byte array</returns>
-        public static byte[] MLLP(Message message, bool validate)
-        {
-            string hl7 = message.SerializeMessage(validate);
-
-            return MLLP(hl7);
-        }
-
-        /// <summary>
         /// Serialize string to MLLP escaped byte array
         /// </summary>
         /// <param name="message">String to serialize</param>
+        /// <param name="encoding">Text encoder (optional)</param>
         /// <returns>MLLP escaped byte array</returns>
-        public static byte[] MLLP(string message)
+        public static byte[] GetMLLP(string message, Encoding encoding = null)
         {
-            return MLLP(message, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Serialize string to MLLP escaped byte array
-        /// </summary>
-        /// <param name="message">String to serialize</param>
-        /// <param name="encoding">Validate the message before serializing</param>
-        /// <returns>MLLP escaped byte array</returns>
-        public static byte[] MLLP(string message, Encoding encoding)
-        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+            
             byte[] data = encoding.GetBytes(message);
             byte[] buffer = new byte[data.Length + 3];
             buffer[0] = 11;//VT
+
             Array.Copy(data, 0, buffer, 1, data.Length);
             buffer[buffer.Length - 2] = 28;//FS
             buffer[buffer.Length - 1] = 13;//CR

@@ -138,7 +138,7 @@ namespace HL7.Dotnetcore
         {
             if (this.HasRepetitions)
             {
-                return _RepetitionList;
+                return RepeatitionList;
             }
             return null;
         }
@@ -147,7 +147,7 @@ namespace HL7.Dotnetcore
         {
             if (this.HasRepetitions)
             {
-                return _RepetitionList[repeatitionNumber - 1];
+                return RepeatitionList[repeatitionNumber - 1];
             }
             return null;
         }

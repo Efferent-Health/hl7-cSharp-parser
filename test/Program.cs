@@ -338,10 +338,15 @@ namespace HL7.Dotnetcore.Test
             var message = new Message(this.HL7_ADT);
             message.ParseMessage();
             Assert.AreEqual(message.Segments("NK1").Count, 2);
+            Assert.AreEqual(message.SegmentCount, 5);
+
             message.RemoveSegment("NK1", 1);
             Assert.AreEqual(message.Segments("NK1").Count, 1);
+            Assert.AreEqual(message.SegmentCount, 4);
+
             message.RemoveSegment("NK1");
             Assert.AreEqual(message.Segments("NK1").Count, 0);
+            Assert.AreEqual(message.SegmentCount, 3);
         }
 
         [DataTestMethod]

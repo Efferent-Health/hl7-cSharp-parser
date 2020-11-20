@@ -521,10 +521,10 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
-        /// Adds a segemnt to the message
+        /// Adds a segment to the message
         /// </summary>
         /// <param name="newSegment">Segment to be appended to the end of the message</param>
-        /// <returns>True if added sucessfully, otherwise false</returns>
+        /// <returns>True if added successfully, otherwise false</returns>
         public bool AddNewSegment(Segment newSegment)
         {
             try
@@ -547,9 +547,9 @@ namespace HL7.Dotnetcore
         /// <summary>
         /// Removes a segment from the message
         /// </summary>
-        /// <param name="segmentName">Segment to be removed/param>
-        /// <param name="index">Zero-based index of the sement to be removed, in case of multiple. Default is 0.</param>
-        /// <returns>True if found and removed sucessfully, otherwise false</returns>
+        /// <param name="segmentName">Segment to be removed</param>
+        /// <param name="index">Zero-based index of the segment to be removed, in case of multiple. Default is 0.</param>
+        /// <returns>True if found and removed successfully, otherwise false</returns>
         public bool RemoveSegment(string segmentName, int index = 0) 
         {
             try
@@ -562,6 +562,8 @@ namespace HL7.Dotnetcore
                     return false;
 
                 list.RemoveAt(index);
+                SegmentCount--;
+
                 return true;
             }
             catch (Exception ex)

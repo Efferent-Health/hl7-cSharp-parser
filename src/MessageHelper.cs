@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -64,17 +65,17 @@ namespace HL7.Dotnetcore
 
                 var groups = matches[0].Groups;
                 int year = int.Parse(groups[1].Value);
-                int month = groups[2].Success ? int.Parse(groups[2].Value) : 1;
-                int day = groups[3].Success ? int.Parse(groups[3].Value) : 1;
-                int hours = groups[4].Success ? int.Parse(groups[4].Value) : 0;
-                int mins = groups[5].Success ? int.Parse(groups[5].Value) : 0;
+                int month = groups[2].Success ? int.Parse(groups[2].Value, CultureInfo.InvariantCulture) : 1;
+                int day = groups[3].Success ? int.Parse(groups[3].Value, CultureInfo.InvariantCulture) : 1;
+                int hours = groups[4].Success ? int.Parse(groups[4].Value, CultureInfo.InvariantCulture) : 0;
+                int mins = groups[5].Success ? int.Parse(groups[5].Value, CultureInfo.InvariantCulture) : 0;
 
-                float fsecs = groups[6].Success ? float.Parse(groups[6].Value) : 0;
+                float fsecs = groups[6].Success ? float.Parse(groups[6].Value, CultureInfo.InvariantCulture) : 0;
                 int secs = (int)Math.Truncate(fsecs);
                 int msecs = (int)Math.Truncate(fsecs * 1000) % 1000;
 
-                int tzh = groups[7].Success ? int.Parse(groups[7].Value) : 0;
-                int tzm = groups[8].Success ? int.Parse(groups[8].Value) : 0;
+                int tzh = groups[7].Success ? int.Parse(groups[7].Value, CultureInfo.InvariantCulture) : 0;
+                int tzm = groups[8].Success ? int.Parse(groups[8].Value, CultureInfo.InvariantCulture) : 0;
                 offset = new TimeSpan(tzh, tzm, 0);
 
                 return new DateTime(year, month, day, hours, mins, secs, msecs);

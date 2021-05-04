@@ -169,5 +169,16 @@ namespace HL7.Dotnetcore
                 throw new HL7Exception("Error removing trailing comonents - " + ex.Message);
             }
         }
+        public void AddRepeatingField(Field field) {
+            if (!this.HasRepetitions) 
+            {
+                throw new HL7Exception("Repeating field must have repetions (HasRepetitions = true)");
+            }
+            if (_RepetitionList == null) 
+            {
+                _RepetitionList = new List<Field>(); 
+            }
+            _RepetitionList.Add(field);
+        }
     }
 }

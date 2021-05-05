@@ -133,6 +133,23 @@ bool isRepeated = message.Segments("PID")[0].Fields(3).HasRepetitions;
 bool isRepeated = message.HasRepetitions("PID.3");
 ````
 
+### Adding repeating field
+
+````cSharp
+var enc = new HL7Encoding();
+Segment PID = new Segment("PID", enc);
+Field f = new Field(enc);
+f.HasRepetitions = true;
+
+// Adding field f1 to f
+Field f1 = new Field("A",enc);
+f.AddRepeatingField(f1);
+
+// Adding field f2 to f
+Field f2 = new Field("B",enc);
+f.AddRepeatingField(f2);
+````
+
 ### Get list of repeated fields
 
 ````cSharp

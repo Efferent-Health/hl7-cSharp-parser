@@ -15,7 +15,7 @@ namespace HL7.Dotnetcore.Test
         {
             var test = new HL7Test();
             // test.CustomDelimiter();
-            test.ParseTest1();
+            test.AddRepeatingField();
         }
 
         public HL7Test()
@@ -583,5 +583,30 @@ PV1||A|00004620^00001318^1318||||000123456^Superfrau^Maria W.^|^Superarzt^Anton^
             Assert.AreEqual(orcSegment.Fields(12).Components().Count, 0);
             Assert.AreEqual("ORC||||||||||||\r", serializedMessage);
         }
+
+
+        [TestMethod]
+        public void AddRepeatingField()
+        {
+            var enc = new HL7Encoding();
+            Segment PID = new Segment("PID", enc);
+            Field f = new Field(enc);
+            Field f1 = new Field("A",enc);
+            Field f2 = new Field("B",enc);
+
+            f.HasRepetitions = true;
+            f.AddRepeatingField(f1);
+            f.AddRepeatingField(f2);
+
+            // Creates a new Field
+            PID.AddNewField(f, 1);
+            
+            Message message = new Message();
+            message.AddNewSegment(PID);
+            var str = message.SerializeMessage(false);
+
+            Assert.AreEqual("PID|A~B\r", str);
+        }
+
     }
 }

@@ -63,5 +63,19 @@ namespace HL7.Dotnetcore
         {
             return SubComponentList;
         }
+
+        public void AddSubComponent(SubComponent subComponent)
+        {
+            if (!this.IsSubComponentized)
+            {
+                throw new HL7Exception("Component must be subcomponentized (IsSubComponentized = true)");
+            }
+            if (SubComponentList == null)
+            {
+                SubComponentList = new List<SubComponent>();
+            }
+            SubComponentList.Add(subComponent);
+        }
+
     }
 }

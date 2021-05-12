@@ -126,17 +126,17 @@ bool isComponentized = message.IsComponentized("PID.5");
 
 ````cSharp
 Segment PID = new Segment("PID", enc);
-            Field f = new Field(enc);
-            Component c = new Component(enc);
-            c.IsSubComponentized = true;
-            SubComponent sc1 = new SubComponent("A",enc);
-            SubComponent sc2 = new SubComponent("B", enc);
-            c.AddSubComponent(sc1);
-            c.AddSubComponent(sc2);
-            f.AddNewComponent(c);
+Field f = new Field(enc);
+Component c = new Component(enc);
+c.IsSubComponentized = true;
+SubComponent sc1 = new SubComponent("A",enc);
+SubComponent sc2 = new SubComponent("B", enc);
+c.AddSubComponent(sc1);
+c.AddSubComponent(sc2);
+f.AddNewComponent(c);
 
-            // Creates a new Field
-            PID.AddNewField(f, 1);
+// Creates a new Field
+PID.AddNewField(f, 1);
 `````
 
 ### Check if field has repetitions

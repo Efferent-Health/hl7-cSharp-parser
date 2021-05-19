@@ -608,5 +608,42 @@ PV1||A|00004620^00001318^1318||||000123456^Superfrau^Maria W.^|^Superarzt^Anton^
             Assert.AreEqual("PID|A~B\r", str);
         }
 
+        [TestMethod]
+        public void SetValueSingleSegment()
+        {
+            var strValueFormat = "PID.2.1";
+            var unchangedValuePath = "PID.3.1";
+            var newPatientId = "1234567";
+            var message = new Message(HL7_ADT);
+            message.ParseMessage();
+
+            message.SetValue(strValueFormat, newPatientId);
+            
+            Assert.AreEqual(newPatientId, message.GetValue(strValueFormat));
+            Assert.AreEqual("454721", message.GetValue(unchangedValuePath));
+        }
+
+        [TestMethod]
+        public void SetValueRepeatingSegments()
+        {
+            var strValueFormat = "NK1.2.1";
+            var unchangedValuePath = "NK1.2.2";
+            var newFamilyName = "SCHMOE";
+            var message = new Message(HL7_ADT);
+            message.ParseMessage();
+
+            message.SetValue(strValueFormat, newFamilyName);
+
+            var firstNK1ChangedValue = message.GetValue(strValueFormat);
+            var firstNK1UnchangedValue = message.GetValue(unchangedValuePath);
+            Assert.IsTrue(message.RemoveSegment("NK1", 0));
+            var secondNk1ChangedValue = message.GetValue(strValueFormat);
+            var secondNk1UnchangedValue = message.GetValue(unchangedValuePath);
+
+            Assert.AreEqual(newFamilyName, firstNK1ChangedValue);
+            Assert.AreEqual(newFamilyName, secondNk1ChangedValue);
+            Assert.AreEqual("MARIE", firstNK1UnchangedValue);
+            Assert.AreEqual("JHON", secondNk1UnchangedValue);
+        }
     }
 }

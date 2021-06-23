@@ -508,10 +508,11 @@ namespace HL7.Dotnetcore
         /// <summary>
         /// Builds the acknowledgement message for this message
         /// </summary>
+        /// <param name="bypassValidation">Bypasses validation of the resulting ACK message</param>
         /// <returns>An ACK message if success, otherwise null</returns>
-        public Message GetACK()
+        public Message GetACK(bool bypassValidation = false)
         {
-            return this.createAckMessage("AA", false, null);
+            return this.createAckMessage("AA", false, null, bypassValidation);
         }
 
         /// <summary>
@@ -519,10 +520,11 @@ namespace HL7.Dotnetcore
         /// </summary>
         /// <param name="code">ack code like AR, AE</param>
         /// <param name="errMsg">Error message to be sent with NACK</param>
+        /// <param name="bypassValidation">Bypasses validation of the resulting NACK message</param>
         /// <returns>A NACK message if success, otherwise null</returns>
-        public Message GetNACK(string code, string errMsg)
+        public Message GetNACK(string code, string errMsg, bool bypassValidation = false)
         {
-            return this.createAckMessage(code, true, errMsg);
+            return this.createAckMessage(code, true, errMsg, bypassValidation);
         }
 
         /// <summary>
@@ -645,8 +647,9 @@ namespace HL7.Dotnetcore
         /// <param name="code">ack code like AA, AR, AE</param>
         /// <param name="isNack">true for generating a NACK message, otherwise false</param>
         /// <param name="errMsg">error message to be sent with NACK</param>
+        /// <param name="bypassValidation">Bypasses validation of the resulting ACK/NACK message</param>
         /// <returns>An ACK or NACK message if success, otherwise null</returns>
-        private Message createAckMessage(string code, bool isNack, string errMsg)
+        private Message createAckMessage(string code, bool isNack, string errMsg, bool bypassValidation)
         {
             var response = new StringBuilder();
 
@@ -671,7 +674,7 @@ namespace HL7.Dotnetcore
             try 
             {
                 var message = new Message(response.ToString());
-                message.ParseMessage();
+                message.ParseMessage(bypassValidation);
                 return message;
             }
             catch 
